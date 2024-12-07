@@ -40,5 +40,3 @@ bot.command("exch", async (msg) => {
 
 
 bot.launch(() => console.log("Start"))
-
-console.log(`Sum: ${sum}, From: ${from}, To: ${to}`);
