@@ -10,15 +10,25 @@ bot.start((msg) => msg.reply("Привіт. Я можу надати актуа�
 bot.help((msg) => msg.reply("/exch sum from to - отримати курс валют."));
 
 bot.command("/exch", async (msg) => {
-    const { text } = msg.message
-    const [sum, from, to] = text.split(" ");
-    const response = await fetch(`${apiUrl}v6/${process.env. apikey}/latest/${from}`)
+    const { text } = msg.message;
+    const [sum, from, to] = text.split(" ").slice(1); // Додано slice(1) для пропуску команди
 
-    console.log(await response.json())
+    try {
+        const response = await fetch(`${apiUrl}v6/${process.env.apikey}/latest/${from}`);
+        const data = await response.json();
 
-    msg.reply(sum * conversion_rates[to])
-})
-
+        if (data && data.conversion_rates && data.conversion_rates[to]) {
+            const conversion_rate = data.conversion_rates[to];
+            const converted_sum = sum * conversion_rate;
+            msg.reply(`${sum} ${from} = ${converted_sum} ${to}`);
+        } else {
+            msg.reply("Не вдалося отримати курс валют. Перевірте правильність введених даних.");
+        }
+    } catch (error) {
+        console.error(error);
+        msg.reply("Сталася помилка при отриманні даних. Спробуйте ще раз.");
+    }
+});
 
 
 
