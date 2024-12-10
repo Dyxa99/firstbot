@@ -1,13 +1,14 @@
 const { Telegraf } = require("telegraf");
-require("dotenv").config();
-const { apiUrl } = require("../data/urls.json");
+require("dotenv").config(); // Для завантаження змінних з .env
 
-const bot = new Telegraf(process.env.token);
+const apiUrl = process.env.API_URL;
+const apiKey = process.env.API_KEY;
+
+const bot = new Telegraf(process.env.TOKEN);
 
 bot.start((msg) => msg.reply("Привіт. Я можу надати актуальний курс валют. Для цього натисніть /exch."));
 
-
-bot.help((msg) => msg.reply("/exch sum from to - отримати курс валют."));
+bot.help((msg) => msg.reply("/exch сума from to - отримати курс валют. Наприклад: /exch 100 USD EUR"));
 
 bot.command("exch", async (msg) => {
     const { text } = msg.message;
@@ -17,11 +18,11 @@ bot.command("exch", async (msg) => {
 
     const [sum, from, to] = text.split(" ").slice(1);
     if (!sum || !from || !to) {
-        return msg.reply("Невірний формат команди. Використовуйте: /exch sum from to. Наприклад: /exch 100 USD EUR");
+        return msg.reply("Невірний формат команди. Використовуйте: /exch сума from to. Наприклад: /exch 100 USD EUR");
     }
 
     try {
-        const response = await fetch(`${apiUrl}v6/${process.env.apikey}/latest/${from}`);
+        const response = await fetch(`${apiUrl}/v6/${apiKey}/latest/${from}`);
         const data = await response.json();
 
         if (data && data.conversion_rates && data.conversion_rates[to]) {
@@ -37,6 +38,4 @@ bot.command("exch", async (msg) => {
     }
 });
 
-
-
-bot.launch(() => console.log("Start"))
+bot.launch(() => console.log("Bot started"));
